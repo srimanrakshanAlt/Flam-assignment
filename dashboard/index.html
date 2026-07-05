@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parametric Curve Fitting Dashboard | R&D Assignment</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">f</div>
+            <div class="title-container">
+                <h1>Parametric Curve Fitting Dashboard</h1>
+                <p class="subtitle">AI & Robotics Research and Development Assignment</p>
+            </div>
+            <div class="badge">R&D / AI Solver</div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="dashboard-grid">
+            
+            <!-- Controls Panel -->
+            <aside class="panel controls-panel">
+                <h2>Control Panel</h2>
+                <p class="panel-desc">Adjust the parameters to visually fit the curve to the dataset in real-time.</p>
+                
+                <!-- Preset Actions -->
+                <div class="preset-container">
+                    <button id="btn-reset" class="btn btn-primary">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm-1.1 11.05L7 11.15 5.59 12.56l4.31 4.31 8.5-8.5-1.41-1.41-7.09 7.09z"/></svg>
+                        Apply Optimized Presets
+                    </button>
+                    <button id="btn-animate" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+                        Animate Fitting Process
+                    </button>
+                </div>
+
+                <!-- Sliders -->
+                <div class="sliders-container">
+                    <!-- Theta -->
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <label for="slider-theta">Theta (&theta;)</label>
+                            <span class="value-display"><span id="val-theta">30.00</span>°</span>
+                        </div>
+                        <input type="range" id="slider-theta" min="0" max="50" step="0.05" value="30.0">
+                        <div class="slider-labels">
+                            <span>0°</span>
+                            <span>Range: 0° - 50°</span>
+                            <span>50°</span>
+                        </div>
+                    </div>
+
+                    <!-- M -->
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <label for="slider-m">Decay/Growth (M)</label>
+                            <span class="value-display"><span id="val-m">0.0300</span></span>
+                        </div>
+                        <input type="range" id="slider-m" min="-0.05" max="0.05" step="0.0005" value="0.03">
+                        <div class="slider-labels">
+                            <span>-0.05</span>
+                            <span>Range: -0.05 - 0.05</span>
+                            <span>0.05</span>
+                        </div>
+                    </div>
+
+                    <!-- X -->
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <label for="slider-x">Horizontal Shift (X)</label>
+                            <span class="value-display"><span id="val-x">55.00</span></span>
+                        </div>
+                        <input type="range" id="slider-x" min="0" max="100" step="0.1" value="55.0">
+                        <div class="slider-labels">
+                            <span>0</span>
+                            <span>Range: 0 - 100</span>
+                            <span>100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Metrics -->
+                <div class="metrics-container">
+                    <h3>Real-time Loss Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-label">Mean L1 Loss</span>
+                            <span id="metric-l1" class="metric-val">0.000000</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Mean L2 Loss</span>
+                            <span id="metric-l2" class="metric-val">0.000000</span>
+                        </div>
+                    </div>
+                    <div class="metric-status" id="fit-status">
+                        <span class="status-indicator success"></span>
+                        <span id="fit-status-text">Perfect Fit! (Error &lt; 1e-5)</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Chart Panel -->
+            <main class="panel chart-panel">
+                <div class="chart-header">
+                    <h2>Coordinate Visualization</h2>
+                    <div class="chart-legend">
+                        <span class="legend-item"><span class="dot dot-data"></span> Observed Points</span>
+                        <span class="legend-item"><span class="dot dot-fitted"></span> Fitted Curve</span>
+                    </div>
+                </div>
+                <div id="plotly-chart" class="chart-wrapper"></div>
+            </main>
+            
+        </div>
+
+        <!-- Math Details -->
+        <section class="panel math-panel">
+            <h2>Mathematical Proof & Transformation Method</h2>
+            <p>Direct optimization of the curve is difficult because we have data coordinates $(x_i, y_i)$ but no matching parameter value $t_i$. We decouple the equations and solve for $t_i$ analytically using a 2D coordinate rotation transformation.</p>
+            
+            <div class="math-columns">
+                <div class="math-col">
+                    <h3>1. Coordinate Transformation</h3>
+                    <p>We shift the coordinates to eliminate $X$ and the constant offset $42$:</p>
+                    <pre><code>x̃ = x - X
+ỹ = y - 42</code></pre>
+                    <p>This leaves us with the simplified system:</p>
+                    <pre><code>x̃ = t·cos(θ) - e^(M·t)·sin(0.3t)·sin(θ)
+ỹ = t·sin(θ) + e^(M·t)·sin(0.3t)·cos(θ)</code></pre>
+                </div>
+                <div class="math-col">
+                    <h3>2. Isolating Parameter <code>t</code></h3>
+                    <p>By rotating coordinates through $\theta$, we project the position vector onto the longitudinal axis, cancelling out the transcendental term:</p>
+                    <pre><code>t = x̃·cos(θ) + ỹ·sin(θ)</code></pre>
+                    <p>Thus, for any candidate values of $\theta$ and $X$, we calculate the exact $t_i$ for each dataset point directly:</p>
+                    <pre><code>t_i = (x_i - X)·cos(θ) + (y_i - 42)·sin(θ)</code></pre>
+                </div>
+                <div class="math-col">
+                    <h3>3. Transverse Fitting</h3>
+                    <p>Similarly, projecting onto the perpendicular transverse axis yields:</p>
+                    <pre><code>-x̃·sin(θ) + ỹ·cos(θ) = e^(M·t)·sin(0.3t)</code></pre>
+                    <p>This gives our objective function to minimize over $\theta$, $M$, and $X$:</p>
+                    <pre><code>Loss = Mean(|Actual_z - Expected_z|)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>Designed and Built for Flam AI Research and Development Assignment | candidate: Sriman Rakshan N</p>
+        </footer>
+    </div>
+
+    <!-- Data & Application Logic -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+Final Parameters
+----------------
+theta = 29.9999730365 degrees
+theta = 0.5235983050 radians
+M     = 0.0299999926
+X     = 54.9999985124
+L1 error = 0.000003537325
+
+Final Equation
+--------------
+\left(t\cos(0.523598)-e^{0.030000\left|t\right|}\sin(0.3t)\sin(0.523598)+54.999999,\ 42+t\sin(0.523598)+e^{0.030000\left|t\right|}\sin(0.3t)\cos(0.523598)\right)
